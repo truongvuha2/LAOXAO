@@ -55,6 +55,12 @@
                     @Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { @class = "btn btn-info" }) |
                     @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { @class = "btn btn-danger" })
                 </td>
+                <td>
+                    <audio controls>
+                        <source src="@item.FilePath" type="audio/mpeg">
+                        Trình duyệt của bạn không hỗ trợ phát nhạc.
+                    </audio>
+                </td>
             </tr>
         }
     </tbody>
