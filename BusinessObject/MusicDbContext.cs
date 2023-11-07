@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace BusinessObject.Models;
+namespace BusinessObject;
 
 public partial class MusicDbContext : DbContext
 {

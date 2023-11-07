@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using BusinessObject.Models;
+using BusinessObject;
+
 namespace LaoXao.Controllers
 {
     public class LoginController : Controller
