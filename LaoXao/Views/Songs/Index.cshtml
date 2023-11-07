@@ -1,0 +1,204 @@
+﻿@model IEnumerable<BusinessObject.Models.Song>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <title>Lao Xao</title>
+</head>
+
+<body>
+    <header>
+        <div class="menu_side">
+            <h1 asp-controller="Songs" asp-action="Index">Lao Xao</h1>
+            <div class="playlist">
+                <h4 id="playlistMenuItem" class="active"><span></span><i class="bi bi-music-note-beamed"></i> Playlist</h4>
+                <h4 id="lastListeningMenuItem"><span></span><i class="bi bi-music-note-beamed"></i> Last Listening</h4>
+                <h4 id="recommendedMenuItem"><span></span><i class="bi bi-music-note-beamed"></i> Recommended</h4>
+                <form asp-action="Index" method="get" class="col-sm-6 d-flex justify-content-start">
+                    <div class="search">
+                        <i class="bi bi-search"></i>
+                        <input name="name" type="text" placeholder="Search..." value="@ViewBag.SearchName" />
+                    </div>
+                </form>
+            </div>
+            <div class="menu_song" id="playlistSongs">
+                @if (ViewBag.SearchResults != null)
+                {
+                    @foreach (var song in ViewBag.SearchResults)
+                    {
+                        <li class="songItem">
+                            <span>@song.Id</span>
+                            <img src="@song.ImgUrl" alt="">
+                            <h5>
+                                @song.Title <br>
+                                <div class="subtitle">@song.Artist</div>
+                            </h5>
+                            <i class="bi playListPlay bi-play-circle-fill" data-song-id="@song.Id" onclick="playAudio('@song.FilePath', @song.Id, '@song.ImgUrl', '@song.Title');"></i>
+                            <i style="display:none;" class="bi playListPause bi-pause-circle-fill" data-song-id="@song.Id" onclick="pauseAudio(@song.Id);"></i>
+                        </li>
+                    }
+                }
+                else
+                {
+                    @foreach (var song in Model)
+                    {
+                        <li class="songItem">
+                            <span>@song.Id</span>
+                            <img src="@song.ImgUrl" alt="">
+                            <h5>
+                                @song.Title <br>
+                                <div class="subtitle">@song.Artist</div>
+                            </h5>
+                            <i class="bi playListPlay bi-play-circle-fill" data-song-id="@song.Id" onclick="playAudio('@song.FilePath', @song.Id, '@song.ImgUrl', '@song.Title');"></i>
+                            <i style="display:none;" class="bi playListPause bi-pause-circle-fill" data-song-id="@song.Id" onclick="pauseAudio(@song.Id);"></i>
+                        </li>
+                    }
+                }
+            </div>
+            <div class="menu_song" id="lastListeningSongs" style="display: none;"></div>
+            <div class="menu_song" id="recommendedSongs" style="display: none;"></div>
+
+        </div>
+        <div class="song_side">
+            <nav>
+                <ul>
+                    <li>Discover <span></span></li>
+                    <li>MY LIBRARY</li>
+                    <li>RADIO</li>
+                </ul>
+                
+                <div class="user">
+                    <img src="https://img.freepik.com/free-vector/cute-boy-playing-saxophone-cartoon-vector-icon-illustration-people-music-icon-concept-isolated-premium-vector-flat-cartoon-style_138676-4014.jpg" alt="">
+                </div>
+            </nav>
+            <div class="content" id="banner1">
+                <h1>Binz Da Poet – Hit Me Up</h1>
+                <p>
+                    Hit me up when no one's around <br />
+                    We gonna do things you already know
+                </p>
+                <img src="@Model.Single(song => song.Id == 2).ImgUrl" alt="">
+                <div class="buttons">
+                    <button onclick="playAudio('@Model.Single(song => song.Id == 2).FilePath', 2, '@Model.Single(song => song.Id == 2).ImgUrl', '@Model.Single(song => song.Id == 2).Title');">PLAY</button>
+                </div>
+            </div>
+
+            <div class="content" id="banner2">
+                <h1>Lệ Lưu Ly - Vũ Phụng Tiên</h1>
+                <p>
+                    Hit me up when no one's around <br />
+                    We gonna do things you already know
+                </p>
+                <img src="@Model.Single(song => song.Id == 5).ImgUrl" alt="">
+                <div class="buttons">
+                    <button onclick="playAudio('@Model.Single(song => song.Id == 5).FilePath', 5, '@Model.Single(song => song.Id == 5).ImgUrl', '@Model.Single(song => song.Id == 5).Title');">PLAY</button>
+                </div>
+            </div>
+
+            <div class="content" id="banner3">
+                <h1>NOLOVENOLIFE - HIEUTHUHAI</h1>
+                <p>
+                    Hit me up when no one's around <br />
+                    We gonna do things you already know
+                </p>
+                <img src="@Model.Single(song => song.Id == 11).ImgUrl" alt="">
+                <div class="buttons">
+                    <button onclick="playAudio('@Model.Single(song => song.Id == 11).FilePath', 11, '@Model.Single(song => song.Id == 11).ImgUrl', '@Model.Single(song => song.Id == 11).Title');">PLAY</button>
+                </div>
+            </div>
+
+            <!-- Thêm thẻ banner khác tại đây nếu cần -->
+
+
+            <div class="popular_song">
+                <div class="h4">
+                    <h4>Popular Song</h4>
+                    <div class="btn_s">
+                        <i class="bi bi-arrow-left-short" id="pop_song_left"></i>
+                        <i class="bi bi-arrow-right-short" id="pop_song_right"></i>
+                    </div>
+                </div>
+                <div class="pop_song">
+                    @foreach (var song in Model)
+                    {
+                        <li class="songItem">
+                            <div class="img_play">
+                                <img src="@song.ImgUrl" alt="">
+                                <i class="bi playListPlay bi-play-circle-fill" data-song-id="@song.Id" onclick="playAudio('@song.FilePath', @song.Id, '@song.ImgUrl', '@song.Title');"></i>
+                                <i style="display:none;" class="bi playListPause bi-pause-circle-fill" data-song-id="@song.Id" onclick="pauseAudio(@song.Id);"></i>
+                            </div>
+                            <h5>
+                                @song.Title <br>
+                                <div class="subtitle">@song.Artist</div>
+                            </h5>
+                        </li>
+                    }
+                </div>
+            </div>
+            <div class="waveMusic">
+                <div class="waveWrapper waveAnimation">
+                    <div class="waveWrapperInner bgTop">
+                        <div class="wave waveTop" style="background-image: url('http://front-end-noobs.com/jecko/img/wave-top.png')"></div>
+                    </div>
+                    <div class="waveWrapperInner bgMiddle">
+                        <div class="wave waveMiddle" style="background-image: url('http://front-end-noobs.com/jecko/img/wave-mid.png')"></div>
+                    </div>
+                    <div class="waveWrapperInner bgBottom">
+                        <div class="wave waveBottom" style="background-image: url('http://front-end-noobs.com/jecko/img/wave-bot.png')"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="master_play">
+            <div class="wave">
+                <div class="wave1"></div>
+                <div class="wave1"></div>
+                <div class="wave1"></div>
+            </div>
+            <img src="https://cdn0.iconfinder.com/data/icons/internet-2020/1080/Applemusicandroid-512.png" alt="" id="masterPlayImage">
+
+            <h5 id="title">
+                Have a good day !!
+                <div class="subtitle"></div>
+            </h5>
+            <div class="icon">
+                <i class="bi shuffle bi-music-note-beamed" onclick="playRandomSong()"></i>
+                <i class="bi bi-skip-start-fill" onclick="playPreviousSong()"></i>
+                <i class="bi playListPlay bi-play-fill" id="masterPlayIconPlay" onclick="togglePlayPause()"></i>
+                <i class="bi playListPause bi-pause-fill" id="masterPlayIconPause" style="display: none;" onclick="togglePlayPause()"></i>
+                <i class="bi bi-skip-end-fill" onclick="playNextSong()"></i>
+            </div>
+            <span id="currentStart">0:00</span>
+            <div class="bar">
+                <input type="range" id="seek" min="0" max="100">
+                <div class="bar2" id="bar2"></div>
+                <div class="dot"></div>
+            </div>
+            <span id="currentEnd">--:--</span>
+            <div class="vol">
+                <i class="bi bi-volume-up-fill" id="vol_icon"></i>
+                <input type="range" min="0" max="100" id="vol">
+                <div class="vol_bar"></div>
+                <div class="dot" id="vol_dot"></div>
+            </div>
+        </div>
+
+    </header>
+
+    <script src="~/js/app.js" asp-append-version="true"></script>
+
+</body>
+
+</html>
