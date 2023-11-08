@@ -17,50 +17,50 @@ namespace LaoXao.Controllers
 
 
         [HttpPost]
-        [HttpPost]
-        public IActionResult Index(Account model)
+        public IActionResult Index(string username, string password)
         {
-            if (ModelState.IsValid)
-            {
-                Account authenticatedAccount = IsValidCredentials(model.Username, model.Password);
 
-                if (authenticatedAccount != null)
+
+            if (accountRepository.IsAccountExisted(username, password))
+            {
+                Account account = accountRepository.GetAccount(username);
+                if (account.Role == "Admin")
                 {
-                    if (authenticatedAccount.Role == "Admin")
+                    if (account.UserStatus.Equals("Active"))
                     {
-                        // Redirect to the Manager action of the Songs controller for admin
-                        return RedirectToAction("Manager", "Songs");
+                        return RedirectToAction("Index", "Account");
                     }
-                    else if (authenticatedAccount.Role == "User")
+                    // Redirect to the Manager action of the Songs controller for admin
+                }
+                else if (account.Role == "User")
+                {
+                    if (account.UserStatus.Equals("Active"))
                     {
-                        TempData["Username"] = authenticatedAccount.Username;
+                        // Tạo một cookie với thời gian sống ban đầu là 7 ngày
+                        var option = new CookieOptions
+                        {
+                            Expires = DateTime.Now.AddDays(1)
+                        };
+                        Response.Cookies.Append("Username", username, option);
+
                         return RedirectToAction("Index", "Songs");
                     }
                 }
-                else
-                {
-                    ModelState.AddModelError("", "Invalid username or password.");
-                }
             }
-            return View(model);
-        }
-
-
-
-        private Account IsValidCredentials(string username, string password)
-        {
-            using (var context = new MusicPrnContext())
+            else
             {
-                var account = context.Accounts.FirstOrDefault(a => a.Username == username && a.Password == password);
-
-                if (account != null)
-                {
-                    return account;
-                }
-
-                return null;
+                ModelState.AddModelError("", "Invalid username or password.");
             }
+
+            return View();
         }
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("Username");
+            return RedirectToAction("Index");
+        }
+
+
 
 
     }
