@@ -22,8 +22,8 @@ namespace LaoXao.Controllers
             {
                 if (authenticatedAccount.Role == "Admin")
                 {
-                    // Redirect to the Manager action of the Songs controller for admin
-                    return RedirectToAction("Manager", "Songs");
+                    // Redirect to the Manager action of the Managers controller for admin
+                    return RedirectToAction("Index", "Managers");
                 }
                 else if (authenticatedAccount.Role == "User")
                 {
