@@ -7,27 +7,27 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository
 {
-    public interface ISongRepository
+    public interface IAlbumRepository
     {
         /// <summary>
-        /// Lấy tất cả các bài hát
+        /// Lấy danh sách album
         /// </summary>
-        IEnumerable<Song> GetAllSongs();
+        IEnumerable<Album> GetAllAlbums();
         /// <summary>
-        /// Lấy bài hát theo Id
+        /// Thêm 1 album bằng id
         /// </summary>
-        Song GetSongById(int songId);
+        Album GetAlbumById(int albumId);
         /// <summary>
-        ///Thêm một bài hát
+        /// Thêm album
         /// </summary>
-        void AddSong(Song song);
+        void AddAlbum(Album album);
         /// <summary>
-        /// Chỉnh sửa bài hát
+        /// Chỉnh sửa album
         /// </summary>
-        void UpdateSong(Song song);
+        void UpdateAlbum(Album album);
         /// <summary>
-        /// Xóa bài hát
+        /// Xóa album
         /// </summary>
-        void DeleteSong(int songId);
+        void DeleteAlbum(int albumId);
     }
 }

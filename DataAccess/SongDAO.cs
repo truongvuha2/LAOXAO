@@ -1,121 +1,64 @@
-﻿using BusinessObject;
+﻿using BusinessObject.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace DataAccess
 {
     public class SongDAO
     {
-        private static SongDAO instance = null;
-        private static readonly object instanceLock = new object();
-
+        public static SongDAO instance = null;
+        private readonly MusicPrnContext _context = new MusicPrnContext();
         public static SongDAO Instance
         {
             get
             {
-                lock (instanceLock)
+                if (instance == null)
                 {
-                    if (instance == null)
-                    {
-                        instance = new SongDAO();
-                    }
-                    return instance;
+                    instance = new SongDAO();
                 }
+                return instance;
+            }
+        }
+        public IEnumerable<Song> GetAllSongs()
+        {
+            return _context.Songs.ToList();
+        }
+
+        public Song GetSongById(int songId)
+        {
+            return _context.Songs.FirstOrDefault(s => s.Id == songId);
+        }
+
+        public void AddSong(Song song)
+        {
+            if (song != null)
+            {
+                _context.Songs.Add(song);
+                _context.SaveChanges();
             }
         }
 
-        public IEnumerable<Song> GetSongList()
+        public void UpdateSong(Song song)
         {
-            var songs = new List<Song>();
-            try
+            if (song != null)
             {
-                using var context = new MusicDbContext();
-                songs = context.Songs.ToList();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            return songs;
-        }
-
-        public Song GetSongByID(int Id)
-        {
-            Song song = null;
-            try
-            {
-                using var context = new MusicDbContext();
-                song = context.Songs.SingleOrDefault(c => c.Id == Id);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-            return song;
-        }
-
-        public void Addnew(Song song)
-        {
-            try
-            {
-                Song _song = GetSongByID(song.Id);
-                if (_song == null)
-                {
-                    using var context = new MusicDbContext();
-                    context.Songs.Add(song);
-                    context.SaveChanges();
-                }
-                else
-                {
-                    throw new Exception("The song is already exist.");
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
+                _context.Entry(song).State = EntityState.Modified;
+                _context.SaveChanges();
             }
         }
 
-        public void Update(Song song)
+        public void DeleteSong(int songId)
         {
-            try
+            var song = _context.Songs.FirstOrDefault(s => s.Id == songId);
+            if (song != null)
             {
-                Song _song = GetSongByID(song.Id);
-                if (_song != null)
-                {
-                    using var context = new MusicDbContext();
-                    context.Songs.Update(song);
-                    context.SaveChanges();
-                }
-                else
-                {
-                    throw new Exception("The song not already exis");
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public void Remove(int Id)
-        {
-            try
-            {
-                Song song = GetSongByID(Id);
-                if (song != null)
-                {
-                    using var context = new MusicDbContext();
-                    context.Songs.Remove(song);
-                    context.SaveChanges();
-                }
-                else
-                {
-
-                    throw new Exception("The song does not already exist.");
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
+                // Thay đổi trạng thái của bản ghi thành "Deleted"
+                song.Status = "Deleted";
+                _context.SaveChanges();
             }
         }
     }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BusinessObject;
+namespace BusinessObject.Models;
 
 public partial class Song
 {
@@ -9,9 +9,9 @@ public partial class Song
 
     public string Title { get; set; } = null!;
 
-    public string? Artist { get; set; }
-
     public string FilePath { get; set; } = null!;
 
     public string ImgUrl { get; set; } = null!;
+
+    public string Status { get; set; } = null!;
 }

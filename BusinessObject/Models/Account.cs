@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BusinessObject;
+namespace BusinessObject.Models;
 
 public partial class Account
 {
@@ -9,5 +9,7 @@ public partial class Account
 
     public string Password { get; set; } = null!;
 
-    public int Role { get; set; }
+    public string Role { get; set; } = null!;
+
+    public string UserStatus { get; set; } = null!;
 }

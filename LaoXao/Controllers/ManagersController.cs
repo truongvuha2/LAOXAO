@@ -1,39 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using BusinessObject.Models;
 using DataAccess.Repository;
-using BusinessObject.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LaoXao.Controllers
 {
-    public class SongsController : Controller
+    public class ManagersController : Controller
     {
         ISongRepository songRepository = new SongRepository();
         ISongArtistRepository songArtistRepository = new SongArtistRepository();
-        // GET: SongsController
-        [Route("Index")]
+
         public ActionResult Index(string? name)
         {
             var songList = songRepository.GetAllSongs();
-            var songArtist = songArtistRepository.GetAllSongsWithArtists();
-            if (name != null)
-            {
-                ViewBag.SearchName = name;
-                ViewBag.SearchResults = songList.Where(f => f.Title.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
-            else
-            {
-                ViewBag.SearchResults = null;
-            }
-            string username = TempData["Username"] as string;
-            ViewBag.Username = username;
-            ViewBag.ArtistList = songArtist;
-
-            return View(songList);
-        }
-        [Route("Manager")]
-        public ActionResult Manager(string? name)
-        {
-            var songList = songRepository.GetAllSongs();
 
             if (name != null)
             {
@@ -45,21 +24,6 @@ namespace LaoXao.Controllers
                 ViewBag.SearchResults = null;
             }
 
-            return View(songList);
-        }
-
-        public ActionResult GetSongs()
-        {
-            var songList = songRepository.GetAllSongs();
-            return Json(songList);
-        }
-
-
-
-
-        public ActionResult Manager()
-        {
-            var songList = songRepository.GetAllSongs();
             return View(songList);
         }
 
@@ -92,7 +56,7 @@ namespace LaoXao.Controllers
                 {
                     songRepository.UpdateSong(song);
                 }
-                return RedirectToAction(nameof(Manager));
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
@@ -131,7 +95,7 @@ namespace LaoXao.Controllers
                 {
                     songRepository.UpdateSong(song);
                 }
-                return RedirectToAction(nameof(Manager));
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
@@ -163,7 +127,7 @@ namespace LaoXao.Controllers
             try
             {
                 songRepository.DeleteSong(id);
-                return RedirectToAction(nameof(Manager));
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {

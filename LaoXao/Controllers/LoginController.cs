@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using BusinessObject;
 using BusinessObject.Models;
 
 namespace LaoXao.Controllers
@@ -24,12 +23,12 @@ namespace LaoXao.Controllers
 
                 if (authenticatedAccount != null)
                 {
-                    if (authenticatedAccount.Role == 1)
+                    if (authenticatedAccount.Role == "Admin")
                     {
                         // Redirect to the Manager action of the Songs controller for admin
                         return RedirectToAction("Manager", "Songs");
                     }
-                    else if (authenticatedAccount.Role == 0)
+                    else if (authenticatedAccount.Role == "User")
                     {
                         TempData["Username"] = authenticatedAccount.Username;
                         return RedirectToAction("Index", "Songs");
@@ -47,7 +46,7 @@ namespace LaoXao.Controllers
 
         private Account IsValidCredentials(string username, string password)
         {
-            using (var context = new MusicDbContext())
+            using (var context = new MusicPrnContext())
             {
                 var account = context.Accounts.FirstOrDefault(a => a.Username == username && a.Password == password);
 
