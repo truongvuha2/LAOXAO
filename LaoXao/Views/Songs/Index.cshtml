@@ -28,51 +28,38 @@
                 <form asp-action="Index" method="get" class="col-sm-6 d-flex justify-content-start">
                     <div class="search">
                         <i class="bi bi-search"></i>
-                        <input name="name" type="text" placeholder="Search..." value="@ViewBag.SearchName" />
+                        <input id="searchInput" name="name" type="text" placeholder="Search..." value="@ViewBag.SearchName" oninput="liveSearch()" />
                     </div>
                 </form>
             </div>
             <div class="menu_song" id="playlistSongs">
-                @if (ViewBag.SearchResults != null)
-                {
-                    @foreach (var song in ViewBag.SearchResults)
+                @{
+                    if (data != null)
                     {
-                        <li class="songItem">
-                            <span>@song.Id</span>
-                            <img src="@song.ImgUrl" alt="">
-                            <h5>
-                                @song.Title <br>
-                                <div class="subtitle">@song.Artist</div>
-                            </h5>
-                            <i class="bi playListPlay bi-play-circle-fill" data-song-id="@song.Id" onclick="playAudio('@song.FilePath', @song.Id, '@song.ImgUrl', '@song.Title');"></i>
-                            <i style="display:none;" class="bi playListPause bi-pause-circle-fill" data-song-id="@song.Id" onclick="pauseAudio(@song.Id);"></i>
-                        </li>
-                    }
-                }
-                else
-                {
-                    @foreach ((BusinessObject.Models.Song a, List<BusinessObject.Models.Artist> b) in data)
-                    {
-                        var song = a;
-                        var artists = b;
-                        <li class="songItem">
-                            <span>@song.Id</span>
-                            <img src="@song.ImgUrl" alt="">
-                            <h5>
-                                @song.Title <br>
-                                @foreach (BusinessObject.Models.Artist artist in artists)
-                                {
-                                    <div class="subtitle">
-                                        @artist.ArtistName
-                                    </div>
-                                }
-                            </h5>
-                            <i class="bi playListPlay bi-play-circle-fill" data-song-id="@song.Id" onclick="playAudio('@song.FilePath', @song.Id, '@song.ImgUrl', '@song.Title');"></i>
-                            <i style="display:none;" class="bi playListPause bi-pause-circle-fill" data-song-id="@song.Id" onclick="pauseAudio(@song.Id);"></i>
-                        </li>
+                        foreach ((BusinessObject.Models.Song a, List<BusinessObject.Models.Artist> b) in data)
+                        {
+                            var song = a;
+                            var artists = b;
+                            <li class="songItem">
+                                <span>@song.Id</span>
+                                <img src="@song.ImgUrl" alt="">
+                                <h5>
+                                    @song.Title <br>
+                                    @foreach (BusinessObject.Models.Artist artist in artists)
+                                    {
+                                        <div class="subtitle">
+                                            @artist.ArtistName
+                                        </div>
+                                    }
+                                </h5>
+                                <i class="bi playListPlay bi-play-circle-fill" data-song-id="@song.Id" onclick="playAudio('@song.FilePath', @song.Id, '@song.ImgUrl', '@song.Title');"></i>
+                                <i style="display:none;" class="bi playListPause bi-pause-circle-fill" data-song-id="@song.Id" onclick="pauseAudio(@song.Id);"></i>
+                            </li>
+                        }
                     }
                 }
             </div>
+
             <div class="menu_song" id="lastListeningSongs" style="display: none;"></div>
             <div class="menu_song" id="recommendedSongs" style="display: none;"></div>
 
@@ -219,7 +206,42 @@
     </header>
 
     <script src="~/js/app.js" asp-append-version="true"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   
+
+    <script>
+        function liveSearch() {
+            var input, filter, playlist, songItem, songTitle, i;
+            input = document.getElementById("searchInput");
+            filter = input.value.toLowerCase();
+            filter = filter.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Normalize and remove diacritics
+            playlist = document.getElementById("playlistSongs");
+            songItem = playlist.getElementsByClassName("songItem");
+
+            for (i = 0; i < songItem.length; i++) {
+                songTitle = songItem[i].getElementsByTagName("h5")[0];
+                if (songTitle) {
+                    var text = songTitle.textContent || songTitle.innerText;
+                    text = text.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Normalize and remove diacritics
+                    if (text.toLowerCase().indexOf(filter) > -1) {
+                        songItem[i].style.display = "";
+                    } else {
+                        songItem[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+
+  
+
+
+
+
+
 
 </body>
+
+
 
 </html>
