@@ -1,6 +1,5 @@
 ﻿@page
-@using BusinessObject;
-@model             Account;
+@using BusinessObject.Models;
 @{
     Layout = null; }
 <!DOCTYPE html>
@@ -10,35 +9,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login Page</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/LoginStyle.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/LaoXao.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <div class="card mt-5">
-                    <div class="card-header">
-                        <h2 class="text-center">Login</h2>
-                    </div>
-                    <div class="card-body">
-                        <form method="post">
-                            <div class="form-group">
-                                <label for="username">Username:</label>
-                                <input type="text" class="form-control" id="username" name="username" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="password">Password:</label>
-                                <input type="password" class="form-control" id="password" name="password" required>
-                            </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-primary">Log In</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+    <div class="box">
+        <span class="borderLine"></span>
+        <form method="post">
+            <h2>Sign in</h2>
+            <div class="inputBox">
+                <input type="text" required="required" id="username" name="username">
+                <span>Username</span>
+                <i></i>
             </div>
-        </div>
+            <div class="inputBox">
+                <input type="password" required="required" id="password" name="password">
+                <span>Password</span>
+                <i></i>
+            </div>
+            <div class="links">
+                <a href="#">Forgot Password</a>
+            </div>
+            <input type="submit" value="Login">
+        </form>
     </div>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
