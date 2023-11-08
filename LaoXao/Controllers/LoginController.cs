@@ -14,33 +14,31 @@ namespace LaoXao.Controllers
 
 
         [HttpPost]
-        [HttpPost]
         public IActionResult Index(Account model)
         {
-            if (ModelState.IsValid)
-            {
-                Account authenticatedAccount = IsValidCredentials(model.Username, model.Password);
+            Account authenticatedAccount = IsValidCredentials(model.Username, model.Password);
 
-                if (authenticatedAccount != null)
+            if (authenticatedAccount != null)
+            {
+                if (authenticatedAccount.Role == "Admin")
                 {
-                    if (authenticatedAccount.Role == "Admin")
-                    {
-                        // Redirect to the Manager action of the Songs controller for admin
-                        return RedirectToAction("Manager", "Songs");
-                    }
-                    else if (authenticatedAccount.Role == "User")
-                    {
-                        TempData["Username"] = authenticatedAccount.Username;
-                        return RedirectToAction("Index", "Songs");
-                    }
+                    // Redirect to the Manager action of the Songs controller for admin
+                    return RedirectToAction("Manager", "Songs");
                 }
-                else
+                else if (authenticatedAccount.Role == "User")
                 {
-                    ModelState.AddModelError("", "Invalid username or password.");
+                    TempData["Username"] = authenticatedAccount.Username;
+                    return RedirectToAction("Index", "Songs");
                 }
             }
+            else
+            {
+                ModelState.AddModelError("", "Invalid username or password.");
+            }
+
             return View(model);
         }
+
 
 
 
