@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BusinessObject.Song>
+﻿@model IEnumerable<BusinessObject.Models.Song>
 
 @{
     ViewData["Title"] = "Index";
@@ -76,7 +76,7 @@
                     <li>MY LIBRARY</li>
                     <li>RADIO</li>
                 </ul>
-                
+                <h5>@ViewBag.Username</h5>
                 <div class="user">
                     <img src="https://img.freepik.com/free-vector/cute-boy-playing-saxophone-cartoon-vector-icon-illustration-people-music-icon-concept-isolated-premium-vector-flat-cartoon-style_138676-4014.jpg" alt="">
                 </div>

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using DataAccess.Repository;
-using BusinessObject;
+using BusinessObject.Models;
 
 namespace LaoXao.Controllers
 {
@@ -24,6 +24,8 @@ namespace LaoXao.Controllers
             {
                 ViewBag.SearchResults = null;
             }
+            string username = TempData["Username"] as string;
+            ViewBag.Username = username;
 
             return View(songList);
         }

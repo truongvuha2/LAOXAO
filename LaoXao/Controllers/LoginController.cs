@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BusinessObject;
+using BusinessObject.Models;
 
 namespace LaoXao.Controllers
 {
@@ -30,7 +31,7 @@ namespace LaoXao.Controllers
                     }
                     else if (authenticatedAccount.Role == 0)
                     {
-                        // Redirect to the Index action of the Songs controller for regular users
+                        TempData["Username"] = authenticatedAccount.Username;
                         return RedirectToAction("Index", "Songs");
                     }
                 }

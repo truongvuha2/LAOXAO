@@ -501,8 +501,8 @@ header .song_side {
 
 header .song_side nav .user {
     position: relative;
-    width: 30px;
-    height: 30px;
+    width: 35px;
+    height: 35px;
     border: 1px solid #fff;
     border-radius: 50%;
 }
@@ -512,6 +512,12 @@ header .song_side nav .user {
         height: 100%;
         border-radius: 50%;
         box-shadow: 2px 2px 8px #121213;
+    }
+    header .song_side nav h5 {
+        max-width:150px;
+        overflow:hidden;
+        position:absolute;
+        right: 7%;
     }
 
 header .song_side .content {
