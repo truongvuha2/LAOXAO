@@ -7,15 +7,18 @@ namespace LaoXao.Controllers
 {
     public class ManagersController : Controller
     {
+        IAlbumDetailRepository albumDetailRepository = new AlbumDetailRepository();
         ISongRepository songRepository = new SongRepository();
+        IArtistRepository artistRepository = new ArtistRepository();
         ISongArtistRepository songArtistRepository = new SongArtistRepository();
 
         public ActionResult Index(string? name)
         {
-            var songList = songRepository.GetAllSongs();
+            var songList = songRepository.GetAllSongs().Where(x => x.Status.Equals("Active"));
 
             if (name != null)
             {
+
                 ViewBag.SearchName = name;
                 ViewBag.SearchResults = songList.Where(f => f.Title.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
             }
@@ -28,19 +31,19 @@ namespace LaoXao.Controllers
         }
 
         // GET: SongsController/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            var song = songRepository.GetSongById(id.Value);
-            if (song == null)
-            {
-                return NotFound();
-            }
-            return View(song);
-        }
+        //public ActionResult Details(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var song = songRepository.GetSongById(id.Value);
+        //    if (song == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return View(song);
+        //}
 
         // GET: SongsController/Create
         public ActionResult Create() => View();
@@ -48,20 +51,35 @@ namespace LaoXao.Controllers
         // POST: SongsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Song song)
+        public ActionResult Create(string Title, string FilePath, string ImgUrl, string ArtistName)
         {
             try
             {
-                if (ModelState.IsValid)
+                Song song = new Song()
                 {
-                    songRepository.UpdateSong(song);
-                }
+                    Title = Title,
+                    FilePath = FilePath,
+                    ImgUrl = ImgUrl,
+                    Status = "Active",
+                };
+
+                Artist artist = new Artist()
+                {
+                    ArtistCountry = "Viet Nam",
+                    ArtistImg = "a",
+                    ArtistName = ArtistName,
+                    ArtistStatus = "Active"
+                };
+
+                songRepository.AddSong(song);
+                artistRepository.AddArtist(artist);
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 ViewBag.Message = ex.Message;
-                return View(song);
+                return View();
             }
         }
 
@@ -83,18 +101,19 @@ namespace LaoXao.Controllers
         // POST: SongsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Song song)
+        public ActionResult Edit(int Id, string Title, string FilePath, string ImgUrl, string ArtistName)
         {
             try
             {
-                if (id != song.Id)
+                Song song = new Song()
                 {
-                    return NotFound();
-                }
-                if (ModelState.IsValid)
-                {
-                    songRepository.UpdateSong(song);
-                }
+                    Id = Id,
+                    Title = Title,
+                    FilePath = FilePath,
+                    ImgUrl = ImgUrl,
+                    Status = "Active",
+                };
+                songRepository.UpdateSong(song);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

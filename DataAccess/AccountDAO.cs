@@ -25,60 +25,84 @@ public class AccountDAO
 
     public IEnumerable<Account> GetAllAccounts()
     {
-        return _context.Accounts.ToList();
+        using var context = new MusicPrnContext();
+        return context.Accounts.ToList();
     }
 
     // Lấy tài khoản dựa vào username
     public Account GetAccount(string username)
     {
-        return _context.Accounts.FirstOrDefault(a => a.Username == username);
+        using var context = new MusicPrnContext();
+        return context.Accounts.FirstOrDefault(a => a.Username == username);
     }
 
     // Kiểm tra xem một tài khoản có tồn tại dựa vào username và password
     public bool IsAccountExisted(string username, string password)
     {
-        return _context.Accounts.Any(a => a.Username == username && a.Password == password);
+        using var context = new MusicPrnContext();
+        return context.Accounts.Any(a => a.Username == username && a.Password == password);
     }
 
     // Xóa một tài khoản dựa vào username
     public void RemoveAccount(string username)
     {
-        var account = _context.Accounts.FirstOrDefault(a => a.Username == username);
+        using var context = new MusicPrnContext();
+        var account = context.Accounts.FirstOrDefault(a => a.Username == username);
         if (account != null)
         {
             account.UserStatus = "Deleted";
-            _context.SaveChanges();
+            context.SaveChanges();
         }
     }
 
     // Kiểm tra xem username có tồn tại
     public bool IsUsernameExisted(string username)
     {
-        return _context.Accounts.Any(a => a.Username == username);
+        using var context = new MusicPrnContext();
+        return context.Accounts.Any(a => a.Username == username);
     }
 
     // Thêm một tài khoản
     public void AddAccount(Account account)
     {
-        _context.Accounts.Add(account);
-        _context.SaveChanges();
+        Account _account = GetAccount(account.Username);
+        try
+        {
+            if (_account == null)
+            {
+                using var context = new MusicPrnContext();
+                context.Accounts.Add(account);
+                context.SaveChanges();
+            }
+            else
+            {
+                throw new Exception("The Username is already exist.");
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+
     }
 
     // Cập nhật thông tin tài khoản
     public void UpdateAccount(Account account)
     {
-        _context.Entry(account).State = EntityState.Modified;
-        _context.SaveChanges();
+        using var context = new MusicPrnContext();
+        context.Entry(account).State = EntityState.Modified;
+        context.SaveChanges();
     }
 
     // Cập nhật mật khẩu của tài khoản
     public void UpdatePassword(string username, string password)
     {
+        using var context = new MusicPrnContext();
         var account = _context.Accounts.FirstOrDefault(a => a.Username == username);
         if (account != null)
         {
             account.Password = password;
-            _context.SaveChanges();
+            context.SaveChanges();
         }
     }
 }

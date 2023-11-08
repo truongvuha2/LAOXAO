@@ -96,11 +96,28 @@ function playAudio(audioUrl, songId, imgUrl, title) {
 
     masterPlayIconPlay.style.display = "none";
     masterPlayIconPause.style.display = "inline";
+   
     currentSongId = songId;
 
     // Lưu trạng thái của bài hát hiện tại và nút "Play" và "Pause" của nó
     currentSongId = songId;
-
+    $.ajax({
+        url: "/Songs/IsFavorite", // Đảm bảo rằng URL đúng
+        type: "get",
+        data: {
+            id: currentSongId,
+        },
+        success: function (result) {
+            // Update the page with the new data
+            document.getElementById("like").style.display = "block"; // Đã sửa lỗi ở đây (documemt -> document)
+            document.getElementById("unlike").style.display = "none"; // Đã sửa lỗi ở đây (documemt -> document)
+        },
+        error: function (result) {
+            // Update the page with the new data
+            document.getElementById("like").style.display = "none"; // Đã sửa lỗi ở đây (documemt -> document)
+            document.getElementById("unlike").style.display = "block"; // Đã sửa lỗi ở đây (documemt -> document)
+        }
+    });
     // Cập nhật hình ảnh trong thẻ master_play
     var masterPlayImage = document.getElementById("masterPlayImage");
     masterPlayImage.src = imgUrl;
@@ -270,6 +287,7 @@ function playPreviousSong() {
 function changeSong(direction) {
     if (currentSongId !== null) {
         // Tìm bài hát hiện tại trong danh sách bằng songId
+      
         var currentSong = extractedSongs.find(song => song.songId === currentSongId);
 
         if (currentSong) {
@@ -316,15 +334,15 @@ function playRandomSong() {
 }
 
 // Lắng nghe sự kiện click trên menu items
-document.getElementById('playlistMenuItem').addEventListener('click', function() {
+document.getElementById('playlistMenuItem').addEventListener('click', function () {
     displaySongs('playlistSongs'); // Hiển thị danh sách bài hát từ Playlist
 });
 
-document.getElementById('lastListeningMenuItem').addEventListener('click', function() {
+document.getElementById('lastListeningMenuItem').addEventListener('click', function () {
     displaySongs('lastListeningSongs'); // Hiển thị danh sách bài hát từ Last Listening
 });
 
-document.getElementById('recommendedMenuItem').addEventListener('click', function() {
+document.getElementById('recommendedMenuItem').addEventListener('click', function () {
     displaySongs('recommendedSongs'); // Hiển thị danh sách bài hát từ Recommended
 });
 
@@ -421,3 +439,37 @@ menuItems.forEach(function (menuItem) {
         menuItem.classList.add("active");
     });
 });
+
+function likeSong(username) {
+    if (currentSongId != null) {
+        $.ajax({
+            url: "/Songs/AddFavorite", // Đảm bảo rằng URL đúng
+            type: "get",
+            data: {
+                id: currentSongId
+            },
+            success: function (result) {
+                // Update the page with the new data
+                document.getElementById("like").style.display = "block"; // Đã sửa lỗi ở đây (documemt -> document)
+                document.getElementById("unlike").style.display = "none"; // Đã sửa lỗi ở đây (documemt -> document)
+            }
+        });
+    }
+}
+
+function unlikeSong(username) {
+    if (currentSongId != null) {
+        $.ajax({
+            url: "/Songs/RemoveFavorite", // Đảm bảo rằng URL đúng
+            type: "get",
+            data: {
+                id: currentSongId
+            },
+            success: function (result) {
+                // Update the page with the new data
+                document.getElementById("like").style.display = "none"; // Đã sửa lỗi ở đây (documemt -> document)
+                document.getElementById("unlike").style.display = "block"; // Đã sửa lỗi ở đây (documemt -> document)
+            }
+        });
+    }
+}

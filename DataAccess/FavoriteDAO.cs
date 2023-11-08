@@ -12,7 +12,7 @@ namespace DataAccess
     {
 
         public static FavoriteDAO instance = null;
-        private readonly MusicPrnContext _context = new MusicPrnContext();
+
         public static FavoriteDAO Instance
         {
             get
@@ -26,34 +26,55 @@ namespace DataAccess
         }
         public void AddSongToFavorite(string username, int songId)
         {
-            var favorite = new Favorite
+            try
             {
-                Username = username,
-                SongId = songId
-            };
+                using var context = new MusicPrnContext();
+                var newFavorite = new Favorite
+                    {
+                        Username = username,
+                        SongId = songId
+                    };
 
-            _context.Favorites.Add(favorite);
-            _context.SaveChanges();
+
+                    context.Set<Favorite>().AddRange(new List<Favorite> { newFavorite });
+                    context.SaveChanges();
+                
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }   
+
         }
 
         // Lấy tất cả bài hát trong danh sách yêu thích của một người dùng (Username)
         public IEnumerable<Song> GetFavoriteSongs(string username)
         {
-            return _context.Favorites
+            using var context = new MusicPrnContext();
+            return context.Favorites
                 .Where(f => f.Username == username)
                 .Select(f => f.Song)
                 .ToList();
+            
         }
 
         public void RemoveSongFromFavorite(string username, int songId)
         {
-            var favorite = _context.Favorites
-                .FirstOrDefault(f => f.Username == username && f.SongId == songId);
-
-            if (favorite != null)
+            try
             {
-                _context.Favorites.Remove(favorite);
-                _context.SaveChanges();
+                using var context = new MusicPrnContext();
+
+                // Tìm bản ghi Favorite có Username và SongId cụ thể
+                var existingFavorite = context.Favorites.FirstOrDefault(f => f.Username.Equals(username) && f.SongId == songId);
+
+                if (existingFavorite != null)
+                {
+                    context.Favorites.Remove(existingFavorite);
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
         }
     }

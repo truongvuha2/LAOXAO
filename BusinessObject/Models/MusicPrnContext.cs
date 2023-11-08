@@ -125,7 +125,8 @@ public partial class MusicPrnContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Favorite__Userna__440B1D61");
         });
-
+        modelBuilder.Entity<Favorite>().HasKey(f => f.Username);
+        modelBuilder.Entity<Favorite>().HasKey(f => f.SongId);
         modelBuilder.Entity<Song>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Song__3214EC27472295C9");

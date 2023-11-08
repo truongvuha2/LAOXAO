@@ -4,6 +4,9 @@
     ViewData["Title"] = "Index";
     Layout = null;
     var data = ViewBag.ArtistList as IEnumerable<(BusinessObject.Models.Song, List<BusinessObject.Models.Artist>)>;
+    var username = Context.Request.Cookies["Username"];
+    var data2 = ViewBag.FavoriteList as IEnumerable<(BusinessObject.Models.Song, List<BusinessObject.Models.Artist>)>;
+
 }
 
 <!DOCTYPE html>
@@ -24,7 +27,7 @@
             <div class="playlist">
                 <h4 id="playlistMenuItem" class="active"><span></span><i class="bi bi-music-note-beamed"></i> Playlist</h4>
                 <h4 id="lastListeningMenuItem"><span></span><i class="bi bi-music-note-beamed"></i> Last Listening</h4>
-                <h4 id="recommendedMenuItem"><span></span><i class="bi bi-music-note-beamed"></i> Recommended</h4>
+                <h4 id="recommendedMenuItem"><span></span><i class="bi bi-music-note-beamed"></i> Favorite Song</h4>
                 <form asp-action="Index" method="get" class="col-sm-6 d-flex justify-content-start">
                     <div class="search">
                         <i class="bi bi-search"></i>
@@ -33,36 +36,77 @@
                 </form>
             </div>
             <div class="menu_song" id="playlistSongs">
-                @{
-                    if (data != null)
+                @if (ViewBag.SearchResults != null)
+                {
+                    @foreach (var song in ViewBag.SearchResults)
                     {
-                        foreach ((BusinessObject.Models.Song a, List<BusinessObject.Models.Artist> b) in data)
-                        {
-                            var song = a;
-                            var artists = b;
-                            <li class="songItem">
-                                <span>@song.Id</span>
-                                <img src="@song.ImgUrl" alt="">
-                                <h5>
-                                    @song.Title <br>
-                                    @foreach (BusinessObject.Models.Artist artist in artists)
-                                    {
-                                        <div class="subtitle">
-                                            @artist.ArtistName
-                                        </div>
-                                    }
-                                </h5>
-                                <i class="bi playListPlay bi-play-circle-fill" data-song-id="@song.Id" onclick="playAudio('@song.FilePath', @song.Id, '@song.ImgUrl', '@song.Title');"></i>
-                                <i style="display:none;" class="bi playListPause bi-pause-circle-fill" data-song-id="@song.Id" onclick="pauseAudio(@song.Id);"></i>
-                            </li>
-                        }
+                        <li class="songItem">
+                            <span>@song.Id</span>
+                            <img src="@song.ImgUrl" alt="">
+                            <h5>
+                                @song.Title <br>
+                                @foreach (BusinessObject.Models.Artist artist in song)
+                                {
+                                    <div class="subtitle">
+                                        @artist.ArtistName
+                                    </div>
+                                }
+                            </h5>
+                            <i class="bi playListPlay bi-play-circle-fill" data-song-id="@song.Id" onclick="playAudio('@song.FilePath', @song.Id, '@song.ImgUrl', '@song.Title');"></i>
+                            <i style="display:none;" class="bi playListPause bi-pause-circle-fill" data-song-id="@song.Id" onclick="pauseAudio(@song.Id);"></i>
+                        </li>
+                    }
+                }
+                else
+                {
+                    @foreach ((BusinessObject.Models.Song a, List<BusinessObject.Models.Artist> b) in data)
+                    {
+                        var song = a;
+                        var artists = b;
+                        <li class="songItem">
+                            <span>@song.Id</span>
+                            <img src="@song.ImgUrl" alt="">
+                            <h5>
+                                @song.Title <br>
+                                @foreach (BusinessObject.Models.Artist artist in artists)
+                                {
+                                    <div class="subtitle">
+                                        @artist.ArtistName
+                                    </div>
+                                }
+                            </h5>
+                            <i class="bi playListPlay bi-play-circle-fill" data-song-id="@song.Id" onclick="playAudio('@song.FilePath', @song.Id, '@song.ImgUrl', '@song.Title');"></i>
+                            <i style="display:none;" class="bi playListPause bi-pause-circle-fill" data-song-id="@song.Id" onclick="pauseAudio(@song.Id);"></i>
+                        </li>
                     }
                 }
             </div>
-
             <div class="menu_song" id="lastListeningSongs" style="display: none;"></div>
-            <div class="menu_song" id="recommendedSongs" style="display: none;"></div>
-
+            <div class="menu_song" id="recommendedSongs" style="display: none;">
+                @if (data2 != null)
+                {
+                    @foreach ((BusinessObject.Models.Song a, List<BusinessObject.Models.Artist> b) in data2)
+                    {
+                        var song = a;
+                        var artists = b;
+                        <li class="songItem">
+                            <span>@song.Id</span>
+                            <img src="@song.ImgUrl" alt="">
+                            <h5>
+                                @song.Title <br>
+                                @foreach (BusinessObject.Models.Artist artist in artists)
+                                {
+                                    <div class="subtitle">
+                                        @artist.ArtistName
+                                    </div>
+                                }
+                            </h5>
+                            <i class="bi playListPlay bi-play-circle-fill" data-song-id="@song.Id" onclick="playAudio('@song.FilePath', @song.Id, '@song.ImgUrl', '@song.Title');"></i>
+                            <i style="display:none;" class="bi playListPause bi-pause-circle-fill" data-song-id="@song.Id" onclick="pauseAudio(@song.Id);"></i>
+                        </li>
+                    }
+                }
+            </div>
         </div>
         <div class="song_side">
             <nav>
@@ -71,16 +115,19 @@
                     <li>MY LIBRARY</li>
                     <li>RADIO</li>
                 </ul>
-                <h5>@ViewBag.Username</h5>
+                <h5>
+                    Hello, @username <br>
+                    <a style="color:white; text-decoration:none; font-weight:bold" href="~/Login/Logout">Log Out</a>
+                </h5>
                 <div class="user">
                     <img src="https://img.freepik.com/free-vector/cute-boy-playing-saxophone-cartoon-vector-icon-illustration-people-music-icon-concept-isolated-premium-vector-flat-cartoon-style_138676-4014.jpg" alt="">
                 </div>
             </nav>
             <div class="content" id="banner1">
-                <h1>Binz Da Poet – Hit Me Up</h1>
+                <h1>HIEUTHUHAI – Không Phải Gu</h1>
                 <p>
-                    Hit me up when no one's around <br />
-                    We gonna do things you already know
+                    Không phải gu<br />
+                    11 giờ tối là là lên lounge
                 </p>
                 <img src="@Model.Single(song => song.Id == 2).ImgUrl" alt="">
                 <div class="buttons">
@@ -89,10 +136,10 @@
             </div>
 
             <div class="content" id="banner2">
-                <h1>Lệ Lưu Ly - Vũ Phụng Tiên</h1>
+                <h1>HIEUTHUHAI - ngủ một mình</h1>
                 <p>
-                    Hit me up when no one's around <br />
-                    We gonna do things you already know
+                    Hãy ở lại với anh thêm một ngày nữa thôi<br />
+                    Vì anh không muốn phải ngủ một mình đêm nay đâu
                 </p>
                 <img src="@Model.Single(song => song.Id == 5).ImgUrl" alt="">
                 <div class="buttons">
@@ -101,10 +148,10 @@
             </div>
 
             <div class="content" id="banner3">
-                <h1>NOLOVENOLIFE - HIEUTHUHAI</h1>
+                <h1>Sơn Tùng M-TP - Chạy Ngay Đi</h1>
                 <p>
-                    Hit me up when no one's around <br />
-                    We gonna do things you already know
+                    Từng phút cứ mãi trôi xa phai nhòa dần kí ức giữa đôi ta <br />
+                    Từng chút nỗi nhớ hôm qua đâu về lạc bước cứ thế phôi pha
                 </p>
                 <img src="@Model.Single(song => song.Id == 11).ImgUrl" alt="">
                 <div class="buttons">
@@ -152,6 +199,20 @@
                         }
                     }
                 </div>
+                <h4>Album List</h4>
+                <div class="album-list">
+                    @foreach (var z in @ViewBag.AlbumList)
+                    {
+                        <div class="Item">
+                            <div class="img_album">
+                                <img src="@z.AlbumImg" alt="">
+                            </div>
+                            <h5>
+                                @z.AlbumName <br>
+                            </h5>
+                        </div>
+                    }
+                </div>
             </div>
             <div class="waveMusic">
                 <div class="waveWrapper waveAnimation">
@@ -182,11 +243,15 @@
                 <div class="subtitle"></div>
             </h5>
             <div class="icon">
-                <i class="bi shuffle bi-music-note-beamed" onclick="playRandomSong()"></i>
-                <i class="bi bi-skip-start-fill" onclick="playPreviousSong()"></i>
-                <i class="bi playListPlay bi-play-fill" id="masterPlayIconPlay" onclick="togglePlayPause()"></i>
-                <i class="bi playListPause bi-pause-fill" id="masterPlayIconPause" style="display: none;" onclick="togglePlayPause()"></i>
-                <i class="bi bi-skip-end-fill" onclick="playNextSong()"></i>
+                <div class="icon">
+                    <i class="bi shuffle bi-music-note-beamed" onclick="playRandomSong()"></i>
+                    <i class="bi bi-skip-start-fill" onclick="playPreviousSong()"></i>
+                    <i class="bi playListPlay bi-play-fill" id="masterPlayIconPlay" onclick="togglePlayPause()"></i>
+                    <i class="bi playListPause bi-pause-fill" id="masterPlayIconPause" style="display: none;" onclick="togglePlayPause()"></i>
+                    <i class="bi bi-skip-end-fill" onclick="playNextSong()"></i>
+                    <i class="bi bi-balloon-heart" id="unlike" onclick="likeSong()"></i>
+                    <i class="bi bi-balloon-heart" id="like" style="color:red; display:none" onclick="unlikeSong()"></i>
+                </div>
             </div>
             <span id="currentStart">0:00</span>
             <div class="bar">
@@ -206,42 +271,46 @@
     </header>
 
     <script src="~/js/app.js" asp-append-version="true"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-   
 
-    <script>
-        function liveSearch() {
-            var input, filter, playlist, songItem, songTitle, i;
-            input = document.getElementById("searchInput");
-            filter = input.value.toLowerCase();
-            filter = filter.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Normalize and remove diacritics
-            playlist = document.getElementById("playlistSongs");
-            songItem = playlist.getElementsByClassName("songItem");
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-            for (i = 0; i < songItem.length; i++) {
-                songTitle = songItem[i].getElementsByTagName("h5")[0];
-                if (songTitle) {
-                    var text = songTitle.textContent || songTitle.innerText;
-                    text = text.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Normalize and remove diacritics
-                    if (text.toLowerCase().indexOf(filter) > -1) {
-                        songItem[i].style.display = "";
-                    } else {
-                        songItem[i].style.display = "none";
-                    }
+<script>
+    function liveSearch() {
+        var input, filter, playlist, songItem, songTitle, i;
+        input = document.getElementById("searchInput");
+        filter = input.value.toLowerCase();
+        filter = filter.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Normalize and remove diacritics
+        playlist = document.getElementById("playlistSongs");
+        songItem = playlist.getElementsByClassName("songItem");
+
+        for (i = 0; i < songItem.length; i++) {
+            songTitle = songItem[i].getElementsByTagName("h5")[0];
+            if (songTitle) {
+                var text = songTitle.textContent || songTitle.innerText;
+                text = text.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Normalize and remove diacritics
+                if (text.toLowerCase().indexOf(filter) > -1) {
+                    songItem[i].style.display = "";
+                } else {
+                    songItem[i].style.display = "none";
                 }
             }
         }
-    </script>
+    }
+</script>
+<style>
+    .Item .img_album img {
+        width: 150px; /* Đặt kích thước ảnh thành 150px */
+        height: auto; /* Để giữ tỉ lệ chiều cao tự động */
+    }
 
-  
+    .album-list {
+        display: flex;
+        position: absolute;
+    }
 
-
-
-
-
-
-</body>
-
-
-
+    .Item {
+        margin: 10px;
+    }
+</style>
 </html>

@@ -25,7 +25,8 @@ namespace DataAccess
         }
         public IEnumerable<Song> GetAllSongs()
         {
-            return _context.Songs.ToList();
+            using var context = new MusicPrnContext();
+            return context.Songs.ToList();
         }
 
         public Song GetSongById(int songId)
@@ -37,28 +38,54 @@ namespace DataAccess
         {
             if (song != null)
             {
-                _context.Songs.Add(song);
-                _context.SaveChanges();
+                using var context = new MusicPrnContext();
+                context.Songs.Add(song);
+                context.SaveChanges();
             }
         }
 
         public void UpdateSong(Song song)
         {
-            if (song != null)
+            try
             {
-                _context.Entry(song).State = EntityState.Modified;
-                _context.SaveChanges();
+                Song s = GetSongById(song.Id);
+                if (s != null)
+                {
+                    using var context = new MusicPrnContext();
+                    context.Songs.Update(song);
+                    context.SaveChanges();
+                }
+                else
+                {
+                    throw new Exception("Song is already exists");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
 
         public void DeleteSong(int songId)
         {
-            var song = _context.Songs.FirstOrDefault(s => s.Id == songId);
-            if (song != null)
+            try
             {
-                // Thay đổi trạng thái của bản ghi thành "Deleted"
-                song.Status = "Deleted";
-                _context.SaveChanges();
+                Song s = GetSongById(songId);
+                if (s != null)
+                {
+                    s.Status = "Deleted";
+                    using var _context = new MusicPrnContext();
+                    _context.Songs.Update(s);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    throw new Exception("Song is already exists");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
     }

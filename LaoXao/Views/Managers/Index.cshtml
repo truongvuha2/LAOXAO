@@ -5,14 +5,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <!-- Nội dung bố cục của bạn ở đây -->
-<h1>Manager</h1>
+<h1 style="text-align:center">Manager</h1>
 
 <p><a asp-action="Create" class="btn btn-outline-success">Create New</a></p>
 <form asp-action="Manager" method="get" class="form-inline">
-    <div class="input-group" style="width: 500px;">
-        <input class="form-control" type="search" name="name" placeholder="Search..." value="@ViewBag.SearchName" id="inputDefault">
-        <button class="btn btn-secondary" type="submit">Search Music</button>
-    </div>
+    
 </form>
 
 <div>
@@ -52,8 +49,8 @@
                             </audio>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-outline-primary">@Html.ActionLink("Edit", "Edit", new { id = song.Id }) </button>
-                            <button type="button" class="btn btn-outline-danger">@Html.ActionLink("Delete", "Delete", new { id = song.Id})</button>
+                            @Html.ActionLink("Edit", "Edit", new { id = song.Id }, new { @class = "btn btn-outline-primary" }) |
+                            @Html.ActionLink("Delete", "Delete", new { id = song.Id }, new { @class = "btn btn-outline-danger" })
                         </td>
                     </tr>
                 }
@@ -96,8 +93,8 @@
                             </audio>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-outline-primary">@Html.ActionLink("Edit", "Edit", new { id = item.Id }) </button>
-                            <button type="button" class="btn btn-outline-danger">@Html.ActionLink("Delete", "Delete", new { id = item.Id })</button>
+                            @Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { @class = "btn btn-outline-primary" }) |
+                            @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { @class = "btn btn-outline-danger" })
                         </td>
                     </tr>
                 }

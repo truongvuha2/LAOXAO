@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using DataAccess.Repository;
 using BusinessObject.Models;
+using System.Collections.Generic;
 
 namespace LaoXao.Controllers
 {
@@ -9,12 +10,24 @@ namespace LaoXao.Controllers
     {
         ISongRepository songRepository = new SongRepository();
         ISongArtistRepository songArtistRepository = new SongArtistRepository();
+        IAlbumRepository albumRepository = new AlbumRepository();
+        IFavoriteRepository favoriteRepository = new FavoriteRepository();
+
         // GET: SongsController
         [Route("Index")]
         public ActionResult Index(string? name)
         {
-            var songList = songRepository.GetAllSongs();
-            var songArtist = songArtistRepository.GetAllSongsWithArtists();
+            string username = Request.Cookies["Username"];
+            var songList = songRepository.GetAllSongs().Where(x=>x.Status.Equals("Active"));
+            var songArtist = songArtistRepository.GetAllSongsWithArtists().Where(x => x.Song.Status.Equals("Active"));
+            var albumList = albumRepository.GetAllAlbums().Where(x => x.AlbumStatus.Equals("Active")); ;
+            var favoriteList = favoriteRepository.GetFavoriteSongs(username).Where(x=>x.Status.Equals("Active"));
+            IEnumerable<(Song, List<Artist>)> favoriteArtistList = songArtist
+     .Where(sa => favoriteList.Any(f => f.Id == sa.Song.Id))
+     .ToList();
+
+
+
             if (name != null)
             {
                 ViewBag.SearchName = name;
@@ -24,10 +37,11 @@ namespace LaoXao.Controllers
             {
                 ViewBag.SearchResults = null;
             }
-            string username = TempData["Username"] as string;
+
             ViewBag.Username = username;
             ViewBag.ArtistList = songArtist;
-
+            ViewBag.AlbumList = albumList;
+            ViewBag.FavoriteList = favoriteArtistList;
             return View(songList);
         }
         [Route("Manager")]
@@ -169,6 +183,38 @@ namespace LaoXao.Controllers
             {
                 ViewBag.Message = ex.Message;
                 return View();
+            }
+        }
+
+        public ActionResult AddFavorite(int id)
+        {
+            string username = Request.Cookies["Username"];
+            favoriteRepository.AddSongToFavorite(username, id);
+            return Json(new { success = true });
+        }
+
+        public ActionResult RemoveFavorite(int id)
+        {
+            string username = Request.Cookies["Username"];
+            string user = username;
+            favoriteRepository.RemoveSongFromFavorite(user, id);
+            return Json(new { success = true });
+        }
+
+        public ActionResult IsFavorite(int id)
+        {
+            MusicPrnContext context = new MusicPrnContext();
+            string username = Request.Cookies["Username"];
+
+            IEnumerable<Song> favorite = favoriteRepository.GetFavoriteSongs(username);
+            Song song = favorite.FirstOrDefault(x => x.Id == id);
+            if (song != null)
+            {
+                return Json(new { success = true });
+            }
+            else
+            {
+                return BadRequest("An error occurred.");
             }
         }
     }
