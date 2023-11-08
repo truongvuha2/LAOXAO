@@ -10,7 +10,7 @@ namespace LaoXao.Controllers
         ISongRepository songRepository = null;
         public SongsController() => songRepository = new SongRepository();
         // GET: SongsController
-
+        [Route("Index")]
         public ActionResult Index(string? name)
         {
             var songList = songRepository.GetSongs();
@@ -26,6 +26,23 @@ namespace LaoXao.Controllers
             }
             string username = TempData["Username"] as string;
             ViewBag.Username = username;
+
+            return View(songList);
+        }
+        [Route("Manager")]
+        public ActionResult Manager(string? name)
+        {
+            var songList = songRepository.GetSongs();
+
+            if (name != null)
+            {
+                ViewBag.SearchName = name;
+                ViewBag.SearchResults = songList.Where(f => f.Title.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+            else
+            {
+                ViewBag.SearchResults = null;
+            }
 
             return View(songList);
         }
@@ -74,7 +91,7 @@ namespace LaoXao.Controllers
                 {
                     songRepository.InsertSong(song);
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Manager));
             }
             catch (Exception ex)
             {
@@ -113,7 +130,7 @@ namespace LaoXao.Controllers
                 {
                     songRepository.UpdateSong(song);
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Manager));
             }
             catch (Exception ex)
             {
@@ -145,7 +162,7 @@ namespace LaoXao.Controllers
             try
             {
                 songRepository.DeleteSong(id);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Manager));
             }
             catch (Exception ex)
             {
